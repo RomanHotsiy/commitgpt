@@ -20,19 +20,19 @@ On the first run you will be asked to enter your OpenAI session token.
 
 ### Get your session token
 
-Go to https://chat.openai.com/chat and log in or sign up
-1. Open console with `F12`
-2. Open `Application` tab > Cookies
+1. Go to https://chat.openai.com/chat and log in or sign up.
+2. Open console with `F12`.
+3. Open `Application` > `Cookies`.
 ![image](https://user-images.githubusercontent.com/36258159/205494773-32ef651a-994d-435a-9f76-a26699935dac.png)
-3. Copy the value for `__Secure-next-auth.session-token` and paste it into `config.json.example` under `session_token`. You do not need to fill out `Authorization`
+4. Copy the value for `__Secure-next-auth.session-token` and paste it into `config.json.example` under `session_token`. You do not need to fill out `Authorization`
 ![image](https://user-images.githubusercontent.com/36258159/205495076-664a8113-eda5-4d1e-84d3-6fad3614cfd8.png)
-4. Save the modified file to `config.json` (In the current working directory)
+5. Save the modified file to `config.json` (In the current working directory)
 
-## Hot it works
+## How it works
 
-- Run `git diff --staged`
-- Send the diff to the ChatGPT and ask it to suggest some commit messages
-- Show the suggestions to the user
+- Runs `git diff --staged`
+- Sends the diff to ChatGPT and asks it to suggest commit messages
+- Shows suggestions to the user
 
 ## Credits
 
@@ -44,4 +44,4 @@ Some code and approaches were inspired by the awesome projects below:
 
 ----
 
-Do you need API docs? Check out [Redocly](https://redoc.ly).
+Do you need API docs? Check out [Redocly](https://redocly.com).
