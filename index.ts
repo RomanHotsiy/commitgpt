@@ -3,10 +3,16 @@ import { execSync } from 'child_process';
 import { ChatGPTAPI } from 'chatgpt';
 import enquirer from 'enquirer';
 import ora from 'ora';
+import parseArgs from 'yargs-parser';
 
 const CUSTOM_MESSAGE_OPTION = '[write own message]...';
 const MORE_OPTION = '[ask for more ideas]...';
 const spinner = ora();
+
+const argv = parseArgs(process.argv.slice(2));
+
+const conventionalCommit = argv.conventional || argv.c;
+const CONVENTIONAL_REQUEST = conventionalCommit ? `following conventional commit (<type>: <subject>)` : '';
 
 async function run(diff) {
   const api = new ChatGPTAPI();
@@ -17,7 +23,7 @@ async function run(diff) {
   spinner.stop();
 
   const firstRequest =
-    `Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>).\n` +
+    `Suggest me a few good commit messages for my commit ${CONVENTIONAL_REQUEST}.\n` +
     `\`\`\`\n` +
     diff +
     '\n' +
@@ -31,7 +37,7 @@ async function run(diff) {
       const choices = await getMessages(
         api,
         firstRequestSent
-          ? `Suggest a few more commit messages for my changes (without explanations) following conventional commit`
+          ? `Suggest a few more commit messages for my changes (without explanations) ${CONVENTIONAL_REQUEST}`
           : firstRequest
       );
 
