@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "bin": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "ts-node --esm index.ts"
