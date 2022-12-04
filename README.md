@@ -41,3 +41,7 @@ Some code and approaches were inspired by the awesome projects below:
 - https://github.com/acheong08/ChatGPT
 - https://github.com/transitive-bullshit/chatgpt-api
 - https://github.com/wong2/chat-gpt-google-extension
+
+----
+
+Do you need API docs? Check out [Redocly](https://redoc.ly).
