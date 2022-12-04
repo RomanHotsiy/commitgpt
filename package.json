@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/RomanHotsiy/commitgpt#readme",
   "dependencies": {
-    "chatgpt": "^0.4.2"
+    "chatgpt": "^0.4.2",
+    "enquirer": "^2.3.6",
+    "ora": "^6.1.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.1"
