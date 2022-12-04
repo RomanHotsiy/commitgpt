@@ -1,6 +1,8 @@
-# commitgpt - automatically generate commit messages using ChatGPT.
+# commitgpt
 
+Automatically generate commit messages using ChatGPT.
 
+![commitgpt](https://user-images.githubusercontent.com/3975738/205517867-1e7533ae-a8e7-4c0d-afb6-d259635f3f9d.gif)
 
 ## How to use?
 
@@ -25,6 +27,12 @@ Go to https://chat.openai.com/chat and log in or sign up
 3. Copy the value for `__Secure-next-auth.session-token` and paste it into `config.json.example` under `session_token`. You do not need to fill out `Authorization`
 ![image](https://user-images.githubusercontent.com/36258159/205495076-664a8113-eda5-4d1e-84d3-6fad3614cfd8.png)
 4. Save the modified file to `config.json` (In the current working directory)
+
+## Hot it works
+
+- Run `git diff --staged`
+- Send the diff to the ChatGPT and ask it to suggest some commit messages
+- Show the suggestions to the user
 
 ## Credits
 
