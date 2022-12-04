@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { execSync } from 'child_process';
 
 import enquirer from 'enquirer';
@@ -16,9 +17,26 @@ const argv = parseArgs(process.argv.slice(2));
 const conventionalCommit = argv.conventional || argv.c;
 const CONVENTIONAL_REQUEST = conventionalCommit ? `following conventional commit (<type>: <subject>)` : '';
 
-run(execSync('git diff --staged').toString()).then(() => {
-  process.exit(0);
-});
+let diff = '';
+try {
+  diff = execSync('git diff --cached').toString();
+  if (!diff) {
+    console.log('No changes to commit.');
+    process.exit(0);
+  }
+} catch (e) {
+  console.log('Failed to run git diff --cached');
+  process.exit(1);
+}
+
+run(diff)
+  .then(() => {
+    process.exit(0);
+  })
+  .catch(e => {
+    console.log('Error: ' + e.message);
+    process.exit(1);
+  });
 
 async function run(diff: string) {
   const api = new ChatGPTClient({
@@ -98,5 +116,5 @@ function normalizeMessage(line: string) {
     .replace(/[`"']$/, '')
     .replace(/[`"']:/, ':') // sometimes it formats messages like this: `feat`: message
     .replace(/:[`"']/, ':') // sometimes it formats messages like this: `feat:` message
-    .replace(/\\n/g, '')
+    .replace(/\\n/g, '');
 }
