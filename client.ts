@@ -1,3 +1,5 @@
+// Adapted from: https://github.com/wong2/chat-gpt-google-extension/blob/main/background/index.mjs
+
 import { createParser } from 'eventsource-parser';
 import { v4 as uuidv4 } from 'uuid';
 import ExpiryMap from 'expiry-map';
@@ -8,7 +10,6 @@ export type ClientConfig = {
 };
 
 const KEY_ACCESS_TOKEN = 'accessToken';
-
 const cache = new ExpiryMap(10 * 1000);
 
 export async function refreshAccessToken(sessionToken: string) {
