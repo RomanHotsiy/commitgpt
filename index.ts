@@ -96,17 +96,22 @@ async function getMessages(api: ChatGPTClient, request: string) {
   spinner.start('Asking ChatGPT 🤖 for commit messages...');
 
   // send a message and wait for the response
-  const response = await api.getAnswer(request);
+  try {
+    const response = await api.getAnswer(request);
 
-  const messages = response
-    .split('\n')
-    .filter(line => line.match(/^(\d+\.|-|\*)\s+/))
-    .map(normalizeMessage);
+    const messages = response
+      .split('\n')
+      .filter(line => line.match(/^(\d+\.|-|\*)\s+/))
+      .map(normalizeMessage);
 
-  spinner.stop();
+    spinner.stop();
 
-  messages.push(CUSTOM_MESSAGE_OPTION, MORE_OPTION);
-  return messages;
+    messages.push(CUSTOM_MESSAGE_OPTION, MORE_OPTION);
+    return messages;
+  } catch (e) {
+    spinner.stop();
+    throw e;
+  }
 }
 
 function normalizeMessage(line: string) {

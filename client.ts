@@ -10,7 +10,8 @@ export type ClientConfig = {
 };
 
 const KEY_ACCESS_TOKEN = 'accessToken';
-const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36';
+const USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36';
 const cache = new ExpiryMap(10 * 1000);
 
 export async function refreshAccessToken(sessionToken: string) {
@@ -85,6 +86,9 @@ export class ChatGPTClient {
 async function fetchSSE(resource, options) {
   const { onMessage, ...fetchOptions } = options;
   const resp = await fetch(resource, fetchOptions);
+  if (!resp.ok) {
+    throw new Error('Failed to fetch - ' + resp.statusText);
+  }
   const parser = createParser(event => {
     if (event.type === 'event') {
       onMessage(event.data);
