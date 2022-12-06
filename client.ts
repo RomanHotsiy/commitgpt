@@ -10,6 +10,7 @@ export type ClientConfig = {
 };
 
 const KEY_ACCESS_TOKEN = 'accessToken';
+const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36';
 const cache = new ExpiryMap(10 * 1000);
 
 export async function refreshAccessToken(sessionToken: string) {
@@ -18,6 +19,7 @@ export async function refreshAccessToken(sessionToken: string) {
   }
   const resp = await fetch('https://chat.openai.com/api/auth/session', {
     headers: {
+      'User-Agent': USER_AGENT,
       cookie: '__Secure-next-auth.session-token=' + sessionToken,
     },
   })
@@ -46,6 +48,7 @@ export class ChatGPTClient {
       fetchSSE('https://chat.openai.com/backend-api/conversation', {
         method: 'POST',
         headers: {
+          'User-Agent': USER_AGENT,
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
