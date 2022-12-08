@@ -6,10 +6,10 @@ import { ClientConfig, refreshAccessToken } from './client.js';
 
 const CONFIG_FILE_NAME = `${homedir()}/.commit-gpt.json`;
 
-export async function ensureSessionToken(): Promise<string> {
+export async function ensureSessionToken(clean?: boolean): Promise<string> {
   let config: Partial<ClientConfig> = {};
 
-  if (existsSync(CONFIG_FILE_NAME)) {
+  if (existsSync(CONFIG_FILE_NAME) && !clean) {
     config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8'));
   }
 
@@ -29,7 +29,7 @@ export async function ensureSessionToken(): Promise<string> {
   }
 }
 
-async function promptToken() {
+async function promptToken()  {
   try {
     console.log(
       'Follow instructions here to get your OpenAI session token: https://github.com/RomanHotsiy/commitgpt#get-your-session-token'

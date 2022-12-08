@@ -28,7 +28,7 @@ export async function refreshAccessToken(sessionToken: string) {
     .catch(() => ({}));
 
   if (!resp.accessToken) {
-    throw new Error('Unathorized');
+    throw new Error('Unauthorized');
   }
 
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken);
@@ -87,7 +87,7 @@ async function fetchSSE(resource, options) {
   const { onMessage, ...fetchOptions } = options;
   const resp = await fetch(resource, fetchOptions);
   if (!resp.ok) {
-    throw new Error('Failed to fetch - ' + resp.statusText);
+    throw new Error(resp.statusText);
   }
   const parser = createParser(event => {
     if (event.type === 'event') {

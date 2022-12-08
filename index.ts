@@ -110,7 +110,14 @@ async function getMessages(api: ChatGPTClient, request: string) {
     return messages;
   } catch (e) {
     spinner.stop();
-    throw e;
+    if (e.message === 'Unauthorized') {
+      console.log('Looks like your session token has expired');
+      await ensureSessionToken(true);
+      // retry
+      return getMessages(api, request);
+    } else {
+      throw e;
+    }
   }
 }
 
