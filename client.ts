@@ -87,7 +87,9 @@ async function fetchSSE(resource, options) {
   const { onMessage, ...fetchOptions } = options;
   const resp = await fetch(resource, fetchOptions);
   if (!resp.ok) {
-    throw new Error(resp.statusText);
+    const err = new Error(resp.statusText);
+    (err as any).details = await resp.text(); // quick hack to persist the error details
+    throw err;
   }
   const parser = createParser(event => {
     if (event.type === 'event') {

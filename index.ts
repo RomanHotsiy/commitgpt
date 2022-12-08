@@ -35,6 +35,9 @@ run(diff)
   })
   .catch(e => {
     console.log('Error: ' + e.message);
+    if ((e as any).details) {
+      console.log((e as any).details);
+    }
     process.exit(1);
   });
 
