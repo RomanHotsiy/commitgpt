@@ -84,7 +84,7 @@ async function run(diff: string) {
       } else if (answer.message === MORE_OPTION) {
         continue;
       } else {
-        execSync(`git commit -m '${answer.message.replace(/'/, `\\'`)}'`, { stdio: 'inherit' });
+        execSync(`git commit -m '${escapeCommitMessage(answer.message)}'`, { stdio: 'inherit' });
         return;
       }
     } catch (e) {
@@ -132,4 +132,8 @@ function normalizeMessage(line: string) {
     .replace(/[`"']:/, ':') // sometimes it formats messages like this: `feat`: message
     .replace(/:[`"']/, ':') // sometimes it formats messages like this: `feat:` message
     .replace(/\\n/g, '');
+}
+
+function escapeCommitMessage(message: string) {
+  return message.replace(/'/, `''`);
 }
