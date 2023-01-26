@@ -36,7 +36,7 @@ export async function refreshAccessToken(sessionToken: string) {
 }
 
 export class ChatGPTClient {
-  constructor(public config: ClientConfig, public converstationId: string = uuidv4()) {}
+  constructor(public config: ClientConfig, public conversationId: string = uuidv4()) {}
 
   async ensureAuth() {
     await refreshAccessToken(this.config.sessionToken);
@@ -66,7 +66,7 @@ export class ChatGPTClient {
             },
           ],
           model: 'text-davinci-002-render',
-          parent_message_id: this.converstationId,
+          parent_message_id: this.conversationId,
         }),
         onMessage: (message: string) => {
           if (message === '[DONE]') {
