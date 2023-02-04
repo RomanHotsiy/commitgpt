@@ -5,8 +5,7 @@ import enquirer from 'enquirer';
 import ora from 'ora';
 import parseArgs from 'yargs-parser';
 
-import { ChatGPTClient } from './client.js';
-import { ensureSessionToken } from './config.js';
+import { ChatGPTAPI } from 'chatgpt'
 
 const CUSTOM_MESSAGE_OPTION = '[write own message]...';
 const MORE_OPTION = '[ask for more ideas]...';
@@ -42,13 +41,9 @@ run(diff)
   });
 
 async function run(diff: string) {
-  const api = new ChatGPTClient({
-    sessionToken: await ensureSessionToken(),
+  const api = new ChatGPTAPI({
+    apiKey: process.env.OPENAI_API_KEY
   });
-
-  spinner.start('Authorizing with OpenAI...');
-  await api.ensureAuth();
-  spinner.stop();
 
   const firstRequest =
     `Suggest me a few good commit messages for my commit ${CONVENTIONAL_REQUEST}.\n` +
@@ -95,14 +90,14 @@ async function run(diff: string) {
   }
 }
 
-async function getMessages(api: ChatGPTClient, request: string) {
+async function getMessages(api: ChatGPTAPI, request: string) {
   spinner.start('Asking ChatGPT 🤖 for commit messages...');
 
   // send a message and wait for the response
   try {
-    const response = await api.getAnswer(request);
+    const response = await api.sendMessage(request);
 
-    const messages = response
+    const messages = response.text
       .split('\n')
       .filter(line => line.match(/^(\d+\.|-|\*)\s+/))
       .map(normalizeMessage);
@@ -113,11 +108,8 @@ async function getMessages(api: ChatGPTClient, request: string) {
     return messages;
   } catch (e) {
     spinner.stop();
-    if (e.message === 'Unauthorized') {
-      console.log('Looks like your session token has expired');
-      await ensureSessionToken(true);
-      // retry
-      return getMessages(api, request);
+    if (e.message === 'ChatGPT invalid apiKey') {
+      console.log('Looks like your apiKey is invalid: https://platform.openai.com/account/api-keys');
     } else {
       throw e;
     }
