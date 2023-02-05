@@ -4,12 +4,12 @@ import { execSync } from 'child_process';
 import enquirer from 'enquirer';
 import ora from 'ora';
 import parseArgs from 'yargs-parser';
+import { ChatGPTAPI, ChatMessage } from 'chatgpt';
+import * as dotenv from 'dotenv';
+dotenv.config()
 
-import { ChatGPTClient } from './client.js';
-import { ensureSessionToken } from './config.js';
-
-const CUSTOM_MESSAGE_OPTION = '[write own message]...';
-const MORE_OPTION = '[ask for more ideas]...';
+const CUSTOM_MESSAGE_OPTION: string = '[write own message]...';
+const MORE_OPTION: string = '[ask for more ideas]...';
 const spinner = ora();
 
 const argv = parseArgs(process.argv.slice(2));
@@ -42,15 +42,13 @@ run(diff)
   });
 
 async function run(diff: string) {
-  const api = new ChatGPTClient({
-    sessionToken: await ensureSessionToken(),
-  });
-
   spinner.start('Authorizing with OpenAI...');
-  await api.ensureAuth();
+  const api: ChatGPTAPI = new ChatGPTAPI({
+    apiKey: process.env.OPENAI_API_KEY
+  })
   spinner.stop();
 
-  const firstRequest =
+  const firstRequest: string =
     `Suggest me a few good commit messages for my commit ${CONVENTIONAL_REQUEST}.\n` +
     '```\n' +
     diff +
@@ -58,10 +56,10 @@ async function run(diff: string) {
     '```\n\n' +
     `Output results as a list, not more than 6 items.`;
 
-  let firstRequestSent = false;
+  let firstRequestSent: boolean = false;
 
   while (true) {
-    const choices = await getMessages(
+    const choices: string[] = await getMessages(
       api,
       firstRequestSent
         ? `Suggest a few more commit messages for my changes (without explanations) ${CONVENTIONAL_REQUEST}`
@@ -95,14 +93,13 @@ async function run(diff: string) {
   }
 }
 
-async function getMessages(api: ChatGPTClient, request: string) {
+async function getMessages(api: ChatGPTAPI, request: string): Promise<string[]> {
   spinner.start('Asking ChatGPT 🤖 for commit messages...');
 
   // send a message and wait for the response
   try {
-    const response = await api.getAnswer(request);
-
-    const messages = response
+    const response: ChatMessage = await api.sendMessage(request)
+    const messages: string[] = response.text
       .split('\n')
       .filter(line => line.match(/^(\d+\.|-|\*)\s+/))
       .map(normalizeMessage);
@@ -113,18 +110,11 @@ async function getMessages(api: ChatGPTClient, request: string) {
     return messages;
   } catch (e) {
     spinner.stop();
-    if (e.message === 'Unauthorized') {
-      console.log('Looks like your session token has expired');
-      await ensureSessionToken(true);
-      // retry
-      return getMessages(api, request);
-    } else {
-      throw e;
-    }
+    console.log("There was a problem connecting with ChatGPT.")
   }
 }
 
-function normalizeMessage(line: string) {
+function normalizeMessage(line: string): string {
   return line
     .replace(/^(\d+\.|-|\*)\s+/, '')
     .replace(/^[`"']/, '')
@@ -134,6 +124,6 @@ function normalizeMessage(line: string) {
     .replace(/\\n/g, '');
 }
 
-function escapeCommitMessage(message: string) {
+function escapeCommitMessage(message: string): string {
   return message.replace(/'/, `''`);
 }

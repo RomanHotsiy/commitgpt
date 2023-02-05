@@ -1,10 +1,3 @@
-### Update December 12, 2022
-
-OpenAI added additional Cloudflare protections that make it more difficult to access the unofficial API.
-The tool is not working temporary until I find a way to workaround it.
-
-More details in [the issue](https://github.com/RomanHotsiy/commitgpt/issues/22).
-
 # commitgpt
 
 Automatically generate commit messages using ChatGPT.
@@ -23,15 +16,25 @@ or use `-c` for [conventional commits](https://www.conventionalcommits.org/en/v1
 npx commitgpt -c
 ```
 
-On the first run you will be asked to enter your OpenAI session token.
 
-### Get your session token
+### Getting Your OpenAI API Key and Setting the Environment Variable
 
-1. Go to https://chat.openai.com/chat and log in or sign up.
-2. Open console with `F12`.
-3. Open `Application` > `Cookies`.
-![image](https://user-images.githubusercontent.com/36258159/205494773-32ef651a-994d-435a-9f76-a26699935dac.png)
-4. Copy the value for `__Secure-next-auth.session-token` and paste it into the terminal prompt.
+1. Sign up for an OpenAI account and log in to the OpenAI dashboard: https://beta.openai.com/signup
+2. Generate a new API key by clicking on the "API Keys" tab and then clicking on the "Create API Key" button.
+3. Copy the API key to your clipboard.
+4. Open a terminal or command prompt and set the environment variable with the API key using the following command (replace "YOUR_API_KEY" with the actual API key you copied in step 3):
+
+```bash
+export OPENAI_API_KEY="YOUR_API_KEY"
+```
+5. Verify that the environment variable has been set correctly by running the following command:
+
+```bash
+echo $OPENAI_API_KEY
+```
+This should print the value of the `OPENAI_API_KEY` environment variable, which should be the API key you set in step 4.
+
+Note: The steps to set environment variables may differ based on your operating system. For more information, you can refer to the documentation for your specific operating system.
 
 ## How it works
 
