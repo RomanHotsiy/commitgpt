@@ -5,6 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import ExpiryMap from 'expiry-map';
 import fetch, { Response } from 'node-fetch';
 
+import { OpenAIApi, Configuration } from 'openai'; 
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+ 
+
 export type ClientConfig = {
   sessionToken: string;
 };
@@ -46,39 +54,47 @@ export class ChatGPTClient {
 
     let response = '';
     return new Promise((resolve, reject) => {
-      fetchSSE('https://chat.openai.com/backend-api/conversation', {
-        method: 'POST',
-        headers: {
-          'User-Agent': USER_AGENT,
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          action: 'next',
-          messages: [
-            {
-              id: uuidv4(),
-              role: 'user',
-              content: {
-                content_type: 'text',
-                parts: [question],
-              },
-            },
-          ],
-          model: 'text-davinci-002-render',
-          parent_message_id: this.conversationId,
-        }),
-        onMessage: (message: string) => {
-          if (message === '[DONE]') {
-            return resolve(response);
-          }
-          const data = JSON.parse(message);
-          const text = data.message?.content?.parts?.[0];
-          if (text) {
-            response = text;
-          }
-        },
-      }).catch(reject);
+
+      openai.createCompletion({
+        model: "text-davinci-002-render",
+        prompt: question,
+        max_tokens: 2048,
+        temperature: 0.5,
+      });
+
+      // fetchSSE('https://chat.openai.com/backend-api/conversation', {
+      //   method: 'POST',
+      //   headers: {
+      //     'User-Agent': USER_AGENT,
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      //   body: JSON.stringify({
+      //     action: 'next',
+      //     messages: [
+      //       {
+      //         id: uuidv4(),
+      //         role: 'user',
+      //         content: {
+      //           content_type: 'text',
+      //           parts: [question],
+      //         },
+      //       },
+      //     ],
+      //     model: 'text-davinci-002-render',
+      //     parent_message_id: this.conversationId,
+      //   }),
+      //   onMessage: (message: string) => {
+      //     if (message === '[DONE]') {
+      //       return resolve(response);
+      //     }
+      //     const data = JSON.parse(message);
+      //     const text = data.message?.content?.parts?.[0];
+      //     if (text) {
+      //       response = text;
+      //     }
+      //   },
+      // }).catch(reject);
     });
   }
 }
