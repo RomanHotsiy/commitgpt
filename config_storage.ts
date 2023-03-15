@@ -16,7 +16,7 @@ interface Config {
   maxTokens: number;
 }
 
-const initConfig = {
+const defaultConfig = {
   model: "text-davinci-003",
   temperature: 0.5,
   maxTokens: 2048,
@@ -28,7 +28,7 @@ const writeJsonFile = (path: string, data: unknown) => {
 
 function ensureGlobal() {
   if (!existsSync(GLOBAL_CONFIG_PATH)) {
-    writeJsonFile(GLOBAL_CONFIG_PATH, initConfig);
+    writeJsonFile(GLOBAL_CONFIG_PATH, {});
   }
 }
 
@@ -47,7 +47,7 @@ function load() {
   ensureGlobal();
   const global = loadGlobal();
   const local = loadLocal();
-  cache = { ...global, ...local };
+  cache = { ...defaultConfig, ...global, ...local };
   return cache;
 }
 
