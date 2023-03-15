@@ -17,21 +17,39 @@ Automatically generate commit messages using ChatGPT.
 npx commitgpt
 ```
 
-or use `-c` for [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) format.
+### Get OpenAI api key
+https://platform.openai.com/account/api-keys
 
-```bash
-npx commitgpt -c
+### Configuration (Optional)
+you can create `.commitgpt.json` and/or `..commitgpt-template` config files in your project root. 
+
+#### `.commitgpt.json` file
+default: 
+```json
+{
+  "model": "text-davinci-003",
+  "temperature": 0.5,
+  "maxTokens": 2048,
+}
+```
+this file can be used to change the openai model and other parameters.
+
+
+### `.commitgpt-template` file
+default:
+```
+suggest 10 commit messages based on the following diff:
+{{diff}}
+commit messages should:
+ - follow conventional commits
+ - message format should be: <type>[scope]: <description>
+
+examples:
+ - fix(authentication): add password regex pattern
+ - feat(storage): add new test cases
 ```
 
-On the first run you will be asked to enter your OpenAI session token.
-
-### Get your session token
-
-1. Go to https://chat.openai.com/chat and log in or sign up.
-2. Open console with `F12`.
-3. Open `Application` > `Cookies`.
-![image](https://user-images.githubusercontent.com/36258159/205494773-32ef651a-994d-435a-9f76-a26699935dac.png)
-4. Copy the value for `__Secure-next-auth.session-token` and paste it into the terminal prompt.
+this file can be used to change the template used to generate the prompt request. you can modify the template to fit your needs.
 
 ## How it works
 

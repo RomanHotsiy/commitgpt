@@ -39,7 +39,6 @@ export async function getPromptOptions(): Promise<{
   const model = getConfig<string>("model");
   const temperature = getConfig<number>("temperature");
   const maxTokens = getConfig<number>("maxTokens");
-  const promptTemplate = getConfig<string | undefined>("promptTemplate");
 
   return {
     model,
