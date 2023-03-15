@@ -2,7 +2,10 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "module": "ESNext",
+    "target": "es2022",
+    "lib": ["es2022"],
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   }
 }
