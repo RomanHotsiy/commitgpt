@@ -88,7 +88,10 @@ async function getMessages(api: ChatGPTClient, request: string) {
   try {
     const response = await api.getAnswer(request);
     // find json array of strings in the response
-    const messages = response.split("\n").map(normalizeMessage);
+    const messages = response
+      .split("\n")
+      .map(normalizeMessage)
+      .filter((l) => l.length > 1);
 
     spinner.stop();
 
@@ -108,12 +111,14 @@ async function getMessages(api: ChatGPTClient, request: string) {
 
 function normalizeMessage(line: string) {
   return line
+    .trim()
     .replace(/^(\d+\.|-|\*)\s+/, "")
     .replace(/^[`"']/, "")
     .replace(/[`"']$/, "")
     .replace(/[`"']:/, ":") // sometimes it formats messages like this: `feat`: message
     .replace(/:[`"']/, ":") // sometimes it formats messages like this: `feat:` message
-    .replace(/\\n/g, "");
+    .replace(/\\n/g, "")
+    .trim();
 }
 
 function escapeCommitMessage(message: string) {
