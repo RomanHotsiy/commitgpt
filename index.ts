@@ -34,10 +34,12 @@ const spinner = ora();
  *
  * @param diff - The diff to use in the prompt.
  * @param printPrompt - Whether to print the prompt only, skipping the call to the API.
+ * @param promptTemplate - The custom prompt template to use.
  */
 async function runCommitMessagePrompt(
   diff: string,
-  printPrompt: boolean
+  printPrompt: boolean,
+  promptTemplate: string
 ): Promise<void> {
   // TODO: we should use a good tokenizer here
   const diffTokens = diff.split(" ").length;
@@ -48,7 +50,7 @@ async function runCommitMessagePrompt(
 
   const api = new ChatGPTClient();
 
-  const prompt = loadPromptTemplate().replace(
+  const prompt = promptTemplate.replace(
     "{{diff}}",
     ["```", diff, "```"].join("\n")
   );
@@ -172,7 +174,11 @@ const args = minimist(process.argv.slice(2), {
   boolean: ["print-prompt", "help"],
   alias: {
     "print-prompt": "p",
+    "prompt-template": "t",
     help: "h",
+  },
+  default: {
+    "prompt-template": "",
   },
 });
 
@@ -182,10 +188,23 @@ Usage:
     commitgpt [options]
 
 Options:
+  -t --prompt-template  The custom GPT prompt template to use. Ensure that the template contains the {{diff}} placeholder.
   -p --print-prompt     Print the prompt that would be sent to the ChatGPT API instead of using the API. Useful if you don't have an API key.
   -h --help             Show this help message.
 `);
   process.exit(0);
+}
+
+const promptTemplate =
+  args["prompt-template"]?.length > 0
+    ? args["prompt-template"]
+    : loadPromptTemplate();
+
+if (!promptTemplate.match(/{{diff}}/)) {
+  console.log(
+    `The prompt template must contain the {{diff}} placeholder. This placeholder will be replaced with the diff of the staged changes.`
+  );
+  process.exit(1);
 }
 
 let diff = "";
@@ -200,7 +219,7 @@ try {
   process.exit(1);
 }
 
-runCommitMessagePrompt(diff, args["print-prompt"])
+runCommitMessagePrompt(diff, args["print-prompt"], promptTemplate)
   .then(() => {
     process.exit(0);
   })
