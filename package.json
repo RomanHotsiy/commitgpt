@@ -23,6 +23,7 @@
   "homepage": "https://github.com/RomanHotsiy/commitgpt#readme",
   "dependencies": {
     "enquirer": "^2.3.6",
+    "minimist": "^1.2.8",
     "openai": "^3.2.1",
     "ora": "^6.1.2",
     "uuid": "^9.0.0",
