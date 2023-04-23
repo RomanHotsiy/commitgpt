@@ -3,6 +3,7 @@
 import { execSync } from "child_process";
 import enquirer from "enquirer";
 import ora from "ora";
+import minimist from "minimist";
 
 import { ChatGPTClient } from "./client.js";
 import { loadPromptTemplate } from "./config_storage.js";
@@ -32,8 +33,12 @@ const spinner = ora();
  * Runs the commit message prompt.
  *
  * @param diff - The diff to use in the prompt.
+ * @param printPrompt - Whether to print the prompt only, skipping the call to the API.
  */
-async function runCommitMessagePrompt(diff: string): Promise<void> {
+async function runCommitMessagePrompt(
+  diff: string,
+  printPrompt: boolean
+): Promise<void> {
   // TODO: we should use a good tokenizer here
   const diffTokens = diff.split(" ").length;
   if (diffTokens > 2000) {
@@ -48,14 +53,19 @@ async function runCommitMessagePrompt(diff: string): Promise<void> {
     ["```", diff, "```"].join("\n")
   );
 
-  const message = await promptForCommitMessage(api, prompt);
-
-  if (message === CUSTOM_MESSAGE_OPTION) {
-    execSync("git commit", { stdio: "inherit" });
+  if (printPrompt) {
+    console.log(prompt);
+    return;
   } else {
-    execSync(`git commit -m '${escapeCommitMessage(message)}'`, {
-      stdio: "inherit",
-    });
+    const message = await promptForCommitMessage(api, prompt);
+
+    if (message === CUSTOM_MESSAGE_OPTION) {
+      execSync("git commit", { stdio: "inherit" });
+    } else {
+      execSync(`git commit -m '${escapeCommitMessage(message)}'`, {
+        stdio: "inherit",
+      });
+    }
   }
 }
 
@@ -158,6 +168,26 @@ function escapeCommitMessage(message: string): string {
   return message.replace(/'/, `''`);
 }
 
+const args = minimist(process.argv.slice(2), {
+  boolean: ["print-prompt", "help"],
+  alias: {
+    "print-prompt": "p",
+    help: "h",
+  },
+});
+
+if (args.help) {
+  console.log(`
+Usage: 
+    commitgpt [options]
+
+Options:
+  -p --print-prompt     Print the prompt that would be sent to the ChatGPT API instead of using the API. Useful if you don't have an API key.
+  -h --help             Show this help message.
+`);
+  process.exit(0);
+}
+
 let diff = "";
 try {
   diff = execSync("git diff --cached").toString();
@@ -170,7 +200,7 @@ try {
   process.exit(1);
 }
 
-runCommitMessagePrompt(diff)
+runCommitMessagePrompt(diff, args["print-prompt"])
   .then(() => {
     process.exit(0);
   })
