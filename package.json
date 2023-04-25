@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/RomanHotsiy/commitgpt#readme",
   "dependencies": {
+    "colors": "^1.4.0",
     "enquirer": "^2.3.6",
     "eventsource-parser": "^0.0.5",
     "expiry-map": "^2.0.0",
