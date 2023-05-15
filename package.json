@@ -23,11 +23,10 @@
   "homepage": "https://github.com/RomanHotsiy/commitgpt#readme",
   "dependencies": {
     "enquirer": "^2.3.6",
-    "eventsource-parser": "^0.0.5",
-    "expiry-map": "^2.0.0",
-    "node-fetch": "^3.3.0",
+    "openai": "^3.2.1",
     "ora": "^6.1.2",
     "uuid": "^9.0.0",
+    "ws": "^8.12.1",
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {

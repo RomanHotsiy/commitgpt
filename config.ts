@@ -1,49 +1,48 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { homedir } from 'os';
-import enquirer from 'enquirer';
+import enquirer from "enquirer";
+import { getConfig, setGlobalConfig } from "./config_storage.js";
 
-import { ClientConfig, refreshAccessToken } from './client.js';
+async function promptToken() {
+  try {
+    const answer = await enquirer.prompt<{ apikey: string }>({
+      type: "password",
+      name: "apikey",
+      message: "Paste your OpenAI apikey here:",
+    });
 
-const CONFIG_FILE_NAME = `${homedir()}/.commit-gpt.json`;
-
-export async function ensureSessionToken(clean?: boolean): Promise<string> {
-  let config: Partial<ClientConfig> = {};
-
-  if (existsSync(CONFIG_FILE_NAME) && !clean) {
-    config = JSON.parse(readFileSync(CONFIG_FILE_NAME, 'utf-8'));
-  }
-
-  if (!config.sessionToken) {
-    config.sessionToken = await promptToken();
-  }
-
-  while (true) {
-    try {
-      await refreshAccessToken(config.sessionToken);
-      writeFileSync(CONFIG_FILE_NAME, JSON.stringify(config, null, 2));
-      return config.sessionToken;
-    } catch (e) {
-      console.log('Invalid token. Please try again.');
-      config.sessionToken = await promptToken();
-    }
+    return answer.apikey;
+  } catch (e) {
+    console.log("Aborted.");
+    process.exit(1);
   }
 }
 
-async function promptToken()  {
-  try {
-    console.log(
-      'Follow instructions here to get your OpenAI session token: https://github.com/RomanHotsiy/commitgpt#get-your-session-token'
-    );
+export async function getApiKey(clean?: boolean): Promise<string> {
+  let apiKey = getConfig<string | undefined>("apiKey");
 
-    const answer = await enquirer.prompt<{ sessionToken: string }>({
-      type: 'password',
-      name: 'sessionToken',
-      message: 'Paste your session token here:',
-    });
-
-    return answer.sessionToken;
-  } catch (e) {
-    console.log('Aborted.');
-    process.exit(1);
+  if (clean) {
+    apiKey = undefined;
   }
+
+  if (!apiKey) {
+    apiKey = await promptToken();
+    setGlobalConfig("apiKey", apiKey);
+  }
+
+  return apiKey;
+}
+
+export async function getPromptOptions(): Promise<{
+  model: string;
+  temperature: number;
+  maxTokens: number;
+}> {
+  const model = getConfig<string>("model");
+  const temperature = getConfig<number>("temperature");
+  const maxTokens = getConfig<number>("maxTokens");
+
+  return {
+    model,
+    temperature,
+    maxTokens,
+  };
 }
