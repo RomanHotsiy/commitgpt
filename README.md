@@ -1,10 +1,3 @@
-### Update December 12, 2022
-
-OpenAI added additional Cloudflare protections that make it more difficult to access the unofficial API.
-The tool is not working temporary until I find a way to workaround it.
-
-More details in [the issue](https://github.com/RomanHotsiy/commitgpt/issues/22).
-
 # commitgpt
 
 Automatically generate commit messages using ChatGPT.
