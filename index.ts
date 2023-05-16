@@ -173,6 +173,7 @@ function escapeCommitMessage(message: string): string {
 const args = minimist(process.argv.slice(2), {
   boolean: ["print-prompt", "help"],
   alias: {
+    amend: "a",
     "print-prompt": "p",
     "prompt-template": "t",
     help: "h",
@@ -188,6 +189,7 @@ Usage:
     commitgpt [options]
 
 Options:
+  -a --amend            Use the diff of the most recent commit instead of the staged changes. Useful if you want to reword the commit message of the most recent commit.
   -t --prompt-template  The custom GPT prompt template to use. Ensure that the template contains the {{diff}} placeholder.
   -p --print-prompt     Print the prompt that would be sent to the ChatGPT API instead of using the API. Useful if you don't have an API key.
   -h --help             Show this help message.
@@ -209,7 +211,24 @@ if (!promptTemplate.match(/{{diff}}/)) {
 
 let diff = "";
 try {
-  diff = execSync("git diff --cached").toString();
+  // Determine if the commit is the first commit
+  var firstCommit =
+    execSync("git log --pretty=%P -n 1", { stdio: "pipe" })
+      .toString()
+      .trim() === "";
+
+  // If the commit is the first commit, then diff against the empty tree
+  if (args["amend"] && firstCommit) {
+    diff = execSync(
+      "git diff 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD"
+    ).toString();
+    // Otherwise diff against the previous commit
+  } else if (args["amend"]) {
+    diff = execSync("git diff HEAD~1 HEAD").toString();
+  } else {
+    diff = execSync("git diff --cached").toString();
+  }
+
   if (!diff) {
     console.log("No changes to commit.");
     process.exit(0);
