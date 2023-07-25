@@ -9,7 +9,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+/**
+ * A client for the OpenAI GPT-3 API.
+ */
 export class ChatGPTClient {
+  /**
+   * Gets an answer to a question from the OpenAI GPT-3 API.
+   * @param question - The question to ask.
+   * @returns The answer to the question.
+   * @throws An error if the API request fails.
+   */
   async getAnswer(question: string): Promise<string> {
     const { model, maxTokens, temperature } = await getPromptOptions();
 

@@ -1,6 +1,11 @@
 import enquirer from "enquirer";
 import { getConfig, setGlobalConfig } from "./config_storage.js";
 
+/**
+ * Prompts the user to enter their OpenAI API key.
+ *
+ * @returns The user's OpenAI API key.
+ */
 async function promptToken() {
   try {
     const answer = await enquirer.prompt<{ apikey: string }>({
@@ -16,6 +21,12 @@ async function promptToken() {
   }
 }
 
+/**
+ * Gets the user's OpenAI API key from the configuration file or prompts the user to enter it.
+ *
+ * @param clean - Whether to clear the cached API key.
+ * @returns The user's OpenAI API key.
+ */
 export async function getApiKey(clean?: boolean): Promise<string> {
   let apiKey = getConfig<string | undefined>("apiKey");
 
@@ -31,6 +42,11 @@ export async function getApiKey(clean?: boolean): Promise<string> {
   return apiKey;
 }
 
+/**
+ * Gets the prompt options from the configuration file.
+ *
+ * @returns The prompt options.
+ */
 export async function getPromptOptions(): Promise<{
   model: string;
   temperature: number;

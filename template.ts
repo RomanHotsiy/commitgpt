@@ -1,3 +1,6 @@
+/**
+ * Default template for the prompt.
+ */
 export const defaultPromptTemplate = [
   "suggest 10 commit messages based on the following diff:",
   "{{diff}}",
