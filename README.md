@@ -14,7 +14,7 @@ npx commitgpt
 https://platform.openai.com/account/api-keys
 
 ### Configuration (Optional)
-you can create `.commitgpt.json` and/or `..commitgpt-template` config files in your project root. 
+you can create `.commitgpt.json` and/or `.commitgpt-template` config files in your project root. 
 
 #### `.commitgpt.json` file
 default: 
