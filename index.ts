@@ -28,7 +28,16 @@ try {
   process.exit(1);
 }
 
-run(diff)
+let currentBranch = "";
+try {
+  currentBranch = execSync("git branch --show-current").toString();
+  currentBranch = currentBranch.replace(/[\r\n]/gm, '').trim();
+} catch (e) {
+  console.log("Failed to run git branch --show-current");
+  process.exit(1);
+}
+
+run(diff, currentBranch)
   .then(() => {
     process.exit(0);
   })
@@ -37,7 +46,7 @@ run(diff)
     process.exit(1);
   });
 
-async function run(diff: string) {
+async function run(diff: string, currentBranch: string) {
   // TODO: we should use a good tokenizer here
   const diffTokens = diff.split(" ").length;
   if (diffTokens > 2000) {
@@ -46,11 +55,16 @@ async function run(diff: string) {
   }
 
   const api = new ChatGPTClient();
-
-  const prompt = loadPromptTemplate().replace(
-    "{{diff}}",
-    ["```", diff, "```"].join("\n")
-  );
+  console.log(currentBranch);
+  const prompt = loadPromptTemplate()
+    .replace(
+      /{{currentBranch}}/g,
+      currentBranch
+    )
+    .replace(
+      "{{diff}}",
+      ["```", diff, "```"].join("\n")
+    );
 
   while (true) {
     debug("prompt: ", prompt);
