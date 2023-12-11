@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execSync, spawnSync } from "child_process";
+import { execSync } from "child_process";
 
 import enquirer from "enquirer";
 import ora from "ora";
@@ -69,8 +69,8 @@ async function run(diff: string) {
         return;
       } else {
         const commitMessage = escapeCommitMessage(answer.message);
-        const commitCommand = ['git', 'commit', '-m', commitMessage];
-        spawnSync(commitCommand[0], commitCommand.slice(1), {stdio: 'inherit'});
+        const commitCommand = `git commit -m "${commitMessage}"`;
+        execSync(commitCommand, {stdio: 'inherit'});
         return;
       }
     } catch (e) {
