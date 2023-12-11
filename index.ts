@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execSync } from "child_process";
+import { execSync, spawnSync } from "child_process";
 
 import enquirer from "enquirer";
 import ora from "ora";
@@ -65,17 +65,21 @@ async function run(diff: string) {
       });
 
       if (answer.message === CUSTOM_MESSAGE_OPTION) {
-        execSync("git commit", { stdio: "inherit" });
+        execSync("git commit", {stdio: "inherit"});
         return;
       } else {
-        execSync(`git commit -m '${escapeCommitMessage(answer.message)}'`, {
-          stdio: "inherit",
-        });
+        const commitMessage = escapeCommitMessage(answer.message);
+        const commitCommand = ['git', 'commit', '-m', commitMessage];
+        spawnSync(commitCommand[0], commitCommand.slice(1), {stdio: 'inherit'});
         return;
       }
     } catch (e) {
-      console.log("Aborted.");
-      console.log(e);
+      console.log("Error:", e.message || e);
+      if (e.status !== null && e.status !== 0) {
+        console.error("Git commit failed with status code:", e.status);
+      } else {
+        console.error("Aborted.");
+      }
       process.exit(1);
     }
   }
