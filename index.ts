@@ -41,7 +41,7 @@ async function run(diff: string) {
   // TODO: we should use a good tokenizer here
   const diffTokens = diff.split(" ").length;
   if (diffTokens > 2000) {
-    console.log(`Diff is way too bug. Truncating to 700 tokens. It may help`);
+    console.log(`Diff is way too big. Truncating to 700 tokens. It may help`);
     diff = diff.split(" ").slice(0, 700).join(" ");
   }
 
