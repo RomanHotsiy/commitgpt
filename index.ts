@@ -69,7 +69,7 @@ async function run(diff: string) {
         return;
       } else {
         const commitMessage = escapeCommitMessage(answer.message);
-        const commitCommand = `git commit -m "${commitMessage}"`;
+        const commitCommand = `git commit -m '${commitMessage}'`;
         execSync(commitCommand, {stdio: 'inherit'});
         return;
       }
