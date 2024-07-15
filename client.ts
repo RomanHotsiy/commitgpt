@@ -14,6 +14,15 @@ export class ChatGPTClient {
     const { model, maxTokens, temperature } = await getPromptOptions();
 
     try {
+      if (model.includes("gpt-3.5") || model.includes("gpt-4")) {
+        const result = await openai.createChatCompletion({
+          model,
+          messages: [{ role: "user", content: question }],
+          max_tokens: maxTokens,
+          temperature,
+        });
+        return result.data.choices[0].message.content;
+      }
       const result = await openai.createCompletion({
         model,
         prompt: question,
